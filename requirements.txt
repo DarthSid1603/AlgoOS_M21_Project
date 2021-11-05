@@ -1,0 +1,4 @@
+psutil == 5.8.0
+pandas == 1.2.4
+numpy == 1.20.1
+pyRAPL == 0.2.3.1
