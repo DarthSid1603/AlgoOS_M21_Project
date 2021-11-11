@@ -50,7 +50,7 @@ def info_of_process():
                 
             try:
                 username = proc.username()
-            except psutil.AccessDenied:
+            except pu.AccessDenied:
                 username = "Not run at Sudo"
                 
             proc_info["creation_time"] = time_create
