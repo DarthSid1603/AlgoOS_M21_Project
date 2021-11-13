@@ -10,6 +10,7 @@ Project for Algorithm and Operating Systems course Monsoon 2021
 - pyRAPL 0.2.3.1
 - pymongo 3.12.1
 - tk 8.6.11
+- matplotlib 3.4.3
 
 ## Running the project
 
