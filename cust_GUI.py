@@ -52,7 +52,7 @@ class Processes(Page):
         Page.__init__(self, *args, **kwargs)
         process_infos = utilities.info_of_process()
         df = pd.DataFrame(process_infos)
-        cust_cols = ["pid","name","cpu_usage_percent","status","Memory_Used"]
+        cust_cols = ["pid","name","cpu_usage_percent","status","Memory_Used","Wait_Bound","Power_Consumption(in uJ)"]
         df = df[cust_cols]
         
         label = tk.Label(self, text="My Label")

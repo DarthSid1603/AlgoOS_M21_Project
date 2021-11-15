@@ -4,7 +4,11 @@ import os
 import time
 import psutil as pu
 from datetime import datetime
+import matplotlib.animation as animation
+from matplotlib import pyplot as plt
 import pyRAPL
+pyRAPL.setup() 
+
 def info_of_process():
     #Empty list to store all process data 
     process_infos = []
@@ -12,6 +16,10 @@ def info_of_process():
     for proc in pu.process_iter():
         proc_info = dict()
         #Suggested in documentation to speed up working
+        
+        meter = pyRAPL.Measurement('bar')
+        meter.begin()
+        
         with proc.oneshot():
             process_id = -100
             if proc.pid == 0:
@@ -50,14 +58,27 @@ def info_of_process():
                 
             try:
                 username = proc.username()
-            except pu.AccessDenied:
+            except psutil.AccessDenied:
                 username = "Not run at Sudo"
+                
+            wait_cat = ''
+            if proc.status() == 'idle':
+                if proc.cpu_times().iowait > 0.0:
+                    wait_cat = 'I/O_WAIT'
+                else:
+                    wait_cat = 'CPU_WAIT'
+            else:
+                wait_cat = 'N/A'
                 
             proc_info["creation_time"] = time_create
             proc_info["Cores_of_CPU"] = cores
             proc_info["Nice_Priority"] = nice_priority
             proc_info["Memory_Used"] = memory_usage
             proc_info["UserName"] = username
+            proc_info["Wait_Bound"] = wait_cat
+            meter.end()
+            proc_info["Power_Consumption(in uJ)"] = meter.result.dram
+            
         
         process_infos.append(proc_info)
         
