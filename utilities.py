@@ -58,7 +58,7 @@ def info_of_process():
                 
             try:
                 username = proc.username()
-            except psutil.AccessDenied:
+            except pu.AccessDenied:
                 username = "Not run at Sudo"
                 
             wait_cat = ''

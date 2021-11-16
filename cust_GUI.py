@@ -17,10 +17,8 @@ def animate(i, cpu, ram, ax, ax1):
     # get data
     cpu.popleft()
     cpu.append(psutil.cpu_percent())
-    # cpu = cpu[-20:] 
     ram.popleft()
     ram.append(psutil.virtual_memory().percent)    
-    # ram = ram[-20:] 
     
     # clear axis
     ax.cla()
@@ -28,6 +26,7 @@ def animate(i, cpu, ram, ax, ax1):
     
     # plot cpu
     ax.plot(cpu)
+    ax.title.set_text("CPU Usage")
     ax.scatter(len(cpu)-1, cpu[-1])
     ax.text(len(cpu)-1, cpu[-1]+2, "{}%".format(cpu[-1]))
     ax.set_ylim(0,100)    
@@ -35,6 +34,7 @@ def animate(i, cpu, ram, ax, ax1):
     
     # plot memory
     ax1.plot(ram)
+    ax1.title.set_text("Memory Usage")
     ax1.scatter(len(ram)-1, ram[-1])
     ax1.text(len(ram)-1, ram[-1]+2, "{}%".format(ram[-1]))
     ax1.set_ylim(0,100)
@@ -110,14 +110,10 @@ class Processes(Page):
 class CPU_Usage(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
-        y = []
+        
         fig = Figure(figsize = (7, 6), dpi = 100)
         plot1 = fig.add_subplot(121)
         plot2 = fig.add_subplot(122)
-
-
-        # cpu = []
-        # ram = []
 
         cpu = collections.deque(np.zeros(20))
         ram = collections.deque(np.zeros(20))
