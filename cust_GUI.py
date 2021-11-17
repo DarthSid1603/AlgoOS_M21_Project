@@ -217,6 +217,58 @@ class Page3(Page):
         # Network PC name
         lab_netnm = tk.Label(frame_grid, text="Network PC name  ", foreground=frg_color).grid(column=0, row=2, sticky="NE")
         lab_netnm2 = tk.Label(frame_grid, text=uname_list.nodename).grid(column=1, row=2, sticky="NW")
+
+        # Distro
+        lab_distronm = tk.Label(frame_grid, text="Distro  ", foreground=frg_color).grid(column=0, row=3, sticky="NE")
+        lab_distronm2 = tk.Label(frame_grid, text=(uname_list.sysname or "None")).grid(column=1, row=3, sticky="NW")
+        
+        # kernel version
+        lab_kernel = tk.Label(frame_grid, text="Kernel Version  ", foreground=frg_color).grid(column=0, row=4, sticky="NE")
+        kernel_release = uname_list.release
+        lab_kernel2 = tk.Label(frame_grid, text=kernel_release).grid(column=1, row=4, sticky="NW")
+        
+        # desktop
+        lab_desktop = tk.Label(frame_grid, text="Desktop Manager  ", foreground=frg_color).grid(column=0, row=5, sticky="NE")
+        u_dmname = os.environ['XDG_CURRENT_DESKTOP']
+        lab_desktop2 = tk.Label(frame_grid, text=u_dmname).grid(column=1, row=5, sticky="NW")
+        
+        # processor
+        lab_cpu = tk.Label(frame_grid, text="Processor  ", foreground=frg_color).grid(column=0, row=6, sticky="NE")
+        # processor
+        u_proc_num = psutil.cpu_count()
+        u_proc_num_real = psutil.cpu_count(logical=False)
+        u_proc_model_name = ""
+        u_proc_model = ""
+        try:
+            f = open('/proc/cpuinfo', 'r')
+            for line in f:
+                if line.rstrip('\n').startswith('model name'):
+                    u_proc_model_name = line.rstrip('\n').split(':')[1].strip()
+                    break
+            f.close()
+        except:
+            u_proc_model_name("#")
+        if u_proc_num_real == u_proc_num:
+            u_proc_model = u_proc_model_name+" x "+str(u_proc_num_real)
+        else:
+            u_proc_model = u_proc_model_name+" x ("+str(u_proc_num_real)+"+"+str(u_proc_num)+")"
+        lab_processor2 = tk.Label(frame_grid, text=u_proc_model).grid(column=1, row=6, sticky="NW")
+        
+        # Gpu
+        lab_gpu = tk.Label(frame_grid, text="Gpu  ", foreground=frg_color).grid(column=0, row=7, sticky="NE")
+        # gpu name
+        gpu_name = "#"
+        try:
+            # check whether nvidia-smi is in the system
+            if shutil.which("nvidia-smi"):
+                gpu_name = subprocess.check_output("nvidia-smi --query-gpu=gpu_name --format=csv,noheader",shell=True).decode().strip()
+            # alternate method
+            else:
+                # the first 50 chars only
+                gpu_name = subprocess.check_output('lspci | grep VGA | cut -d ":" -f3', shell=True).decode().strip()
+        except:
+            pass
+        lab_gpu2 = tk.Label(frame_grid, text=gpu_name).grid(column=1, row=7, sticky="NW")
        
       
 class MainView(tk.Frame):
