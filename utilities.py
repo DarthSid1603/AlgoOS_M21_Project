@@ -83,3 +83,39 @@ def info_of_process():
         process_infos.append(proc_info)
         
     return process_infos
+
+
+def pretty_print(mem):
+    for start in ['', 'K', 'M', 'G', 'T', 'P']:
+        if mem < 1024:
+            return f"{mem:.2f}{start}B"
+        mem /= 1024
+
+
+def animate(i, cpu, ram, ax, ax1):
+
+    # get data
+    cpu.popleft()
+    cpu.append(pu.cpu_percent())
+    ram.popleft()
+    ram.append(pu.virtual_memory().percent)    
+    
+    # clear axis
+    ax.cla()
+    ax1.cla()    
+    
+    # plot cpu
+    ax.plot(cpu)
+    ax.title.set_text("CPU Usage")
+    ax.scatter(len(cpu)-1, cpu[-1])
+    ax.text(len(cpu)-1, cpu[-1]+2, "{}%".format(cpu[-1]))
+    ax.set_ylim(0,100)    
+    ax.grid()
+    
+    # plot memory
+    ax1.plot(ram)
+    ax1.title.set_text("Memory Usage")
+    ax1.scatter(len(ram)-1, ram[-1])
+    ax1.text(len(ram)-1, ram[-1]+2, "{}%".format(ram[-1]))
+    ax1.set_ylim(0,100)
+    ax1.grid()

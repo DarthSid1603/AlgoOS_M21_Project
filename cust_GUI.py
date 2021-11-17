@@ -10,42 +10,7 @@ import datetime as dt
 import matplotlib.animation as animation
 import collections
 import numpy as np
-import time
 
-def pretty_print(mem):
-    for start in ['', 'K', 'M', 'G', 'T', 'P']:
-        if mem < 1024:
-            return f"{mem:.2f}{start}B"
-        mem /= 1024
-
-
-def animate(i, cpu, ram, ax, ax1):
-
-    # get data
-    cpu.popleft()
-    cpu.append(psutil.cpu_percent())
-    ram.popleft()
-    ram.append(psutil.virtual_memory().percent)    
-    
-    # clear axis
-    ax.cla()
-    ax1.cla()    
-    
-    # plot cpu
-    ax.plot(cpu)
-    ax.title.set_text("CPU Usage")
-    ax.scatter(len(cpu)-1, cpu[-1])
-    ax.text(len(cpu)-1, cpu[-1]+2, "{}%".format(cpu[-1]))
-    ax.set_ylim(0,100)    
-    ax.grid()
-    
-    # plot memory
-    ax1.plot(ram)
-    ax1.title.set_text("Memory Usage")
-    ax1.scatter(len(ram)-1, ram[-1])
-    ax1.text(len(ram)-1, ram[-1]+2, "{}%".format(ram[-1]))
-    ax1.set_ylim(0,100)
-    ax1.grid()
 
 
 class Page(tk.Frame):
@@ -90,7 +55,6 @@ class Processes(Page):
        
         process_infos = utilities.info_of_process()
         df = pd.DataFrame(process_infos)
-        df['Memory_Used'] = df['Memory_Used'].apply(pretty_print)
         #df = df.tail()
         cust_cols = ["pid","name","cpu_usage_percent","status","Memory_Used","Wait_Bound","Power_Consumption(in uJ)"]
         df = df[cust_cols]
@@ -142,8 +106,12 @@ class Processes(Page):
         # Add the labels to this frame
         for i in range(df.shape[0]):
             for j in range(df.shape[1]):
-                label = tk.Label(labels_frame, padx=7, pady=7, borderwidth=1, relief=tk.SOLID, width=widths[j], height=2, text=df.iloc[i, j])
-                label.grid(row=i, column=j, sticky='news')
+                if(j == 4):
+                    label = tk.Label(labels_frame, padx=7, pady=7, borderwidth=1, relief=tk.SOLID, width=widths[j], height=2, text=utilities.pretty_print(df.iloc[i, j]))
+                    label.grid(row=i, column=j, sticky='news')
+                else:   
+                    label = tk.Label(labels_frame, padx=7, pady=7, borderwidth=1, relief=tk.SOLID, width=widths[j], height=2, text=df.iloc[i, j])
+                    label.grid(row=i, column=j, sticky='news')
 
         # Create canvas2 window to hold the label_frame
         canvas2.create_window((0,0), window=labels_frame, anchor=tk.NW)
@@ -173,7 +141,7 @@ class CPU_Usage(Page):
         # creating the Tkinter canvas
         # containing the Matplotlib figure
         canvas = FigureCanvasTkAgg(fig, self)  
-        ani = animation.FuncAnimation(fig, animate, fargs=(cpu, ram, plot1, plot2), interval=1000)
+        ani = animation.FuncAnimation(fig, utilities.animate, fargs=(cpu, ram, plot1, plot2), interval=1000)
         canvas.draw()
        
         # placing the canvas on the Tkinter window
