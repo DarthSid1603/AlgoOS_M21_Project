@@ -10,6 +10,9 @@ import datetime as dt
 import matplotlib.animation as animation
 import collections
 import numpy as np
+import os
+import shutil
+import subprocess
 
 
 
@@ -29,16 +32,17 @@ class Processes(Page):
     def refresh_button(self):
         frame3 = tk.Frame(self)
 
+        label3 = tk.Label(frame3, text = "")
+        label3.pack()
         frame3.grid(row = 3, column=0, padx=2, sticky=tk.NW)
         refresh_Button = tk.Button(frame3,
                         text = "Refresh", 
                         command = lambda: Processes.render(self),
                         bg = "blue",
-                        fg = "green")
+                        fg = "white")
         refresh_Button.pack(side = "left")
 
-        label3 = tk.Label(frame3, text = "")
-        label3.pack()
+        
 
     def kill_proc(self, inputtxt):
         inp = inputtxt.get(1.0, "end-1c")
@@ -52,30 +56,27 @@ class Processes(Page):
     def kill_button(self):
         frame2 = tk.Frame(self)
 
+        label5 = tk.Label(frame2, text = "")
+        label5.pack()
         inputtxt = tk.Text(frame2,
-                   height = 2,
+                   height = 1,
                    width = 15)
         inputtxt.pack(side = "right")
 
         frame2.grid(row = 3, column=0, padx=2, sticky=tk.SE)
-        #label4 = tk.Label(frame2, text = "")
-        #label4.pack()
-
         kill_Button = tk.Button(frame2,
                         text = "Kill", 
                         command = lambda: Processes.kill_proc(self, inputtxt),
                         bg = "red",
-                        fg = "yellow")
+                        fg = "white")
         kill_Button.pack()
 
-        #label2 = tk.Label(frame2, text = "")
-        #label2.pack()
         
     def render(self,sortby="pid",order = True):       
        
         process_infos = utilities.info_of_process()
         df = pd.DataFrame(process_infos)
-        #df = df.tail()
+        df = df.tail()
         cust_cols = ["pid","name","cpu_usage_percent","status","Memory_Used","Wait_Bound","Power_Consumption(in uJ)"]
         df = df[cust_cols]
         df = df.sort_values(by=[sortby], ascending = order)
@@ -170,9 +171,29 @@ class CPU_Usage(Page):
 
 class Page3(Page):
    def __init__(self, *args, **kwargs):
-       Page.__init__(self, *args, **kwargs)
-       label = tk.Label(self, text="This is page 3")
-       label.pack(side="top", fill="both", expand=True)
+        Page.__init__(self, *args, **kwargs)
+        label = tk.Label(self, text=" ")
+        label.pack(side="top", fill="both")
+        frg_color = "gray40"
+        self.llogo = tk.PhotoImage(file="./icon/image.png")
+        lab_logo = tk.Label(self, image=self.llogo)
+        lab_logo.pack(side="left", anchor="nw")
+        uname_list = os.uname()
+        frame_grid = tk.Frame(self)
+        mem = psutil.virtual_memory()
+        mswap = psutil.swap_memory()
+        PSUTIL_V = psutil.version_info
+        frame_grid.pack(side="left", anchor="n")
+        # empty label
+        lab_empty = tk.Label(frame_grid, text="").grid(column=0, row=0)
+        # user name
+        lab_un = tk.Label(frame_grid, text="User Name  ", foreground=frg_color).grid(column=0, row=1, sticky="NE")
+        u_username = psutil.Process().username()
+        lab_un2 = tk.Label(frame_grid, text=u_username).grid(column=1, row=1, sticky="NW")
+        # Network PC name
+        lab_netnm = tk.Label(frame_grid, text="Network PC name  ", foreground=frg_color).grid(column=0, row=2, sticky="NE")
+        lab_netnm2 = tk.Label(frame_grid, text=uname_list.nodename).grid(column=1, row=2, sticky="NW")
+       
       
 class MainView(tk.Frame):
     def __init__(self, *args, **kwargs):
@@ -192,7 +213,7 @@ class MainView(tk.Frame):
 
         b1 = tk.Button(buttonframe, text="Processes", command=p1.show)
         b2 = tk.Button(buttonframe, text="CPU Details", command=p2.show)
-        b3 = tk.Button(buttonframe, text="Page 3", command=p3.show)
+        b3 = tk.Button(buttonframe, text="System Summary", command=p3.show)
 
         b1.pack(side="left")
         b2.pack(side="left")
