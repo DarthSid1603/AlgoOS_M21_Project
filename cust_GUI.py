@@ -24,6 +24,19 @@ class Processes(Page):
         Page.__init__(self, *args, **kwargs)
         Processes.render(self)
         Processes.kill_button(self)
+        Processes.refresh_button(self)
+
+    def refresh_button(self):
+        frame3 = tk.Frame(self)
+
+        frame3.grid(row = 3, column=0, padx=2, sticky=tk.NW)
+        refresh_Button = tk.Button(frame3,
+                        text = "Refresh", 
+                        command = lambda: Processes.render(self))
+        refresh_Button.pack(side = "left")
+
+        label3 = tk.Label(frame3, text = "")
+        label3.pack()
 
     def kill_proc(self, inputtxt):
         inp = inputtxt.get(1.0, "end-1c")
