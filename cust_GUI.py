@@ -12,7 +12,8 @@ import collections
 import numpy as np
 import os
 import shutil
-import subprocess
+import subprocess as sp
+
 
 
 
@@ -76,9 +77,32 @@ class Processes(Page):
        
         process_infos = utilities.info_of_process()
         df = pd.DataFrame(process_infos)
-        df = df.tail()
+        #df = df.tail()
         cust_cols = ["pid","name","cpu_usage_percent","status","Memory_Used","Wait_Bound","Power_Consumption(in uJ)"]
         df = df[cust_cols]
+
+        user_name = (sp.run(["whoami"], stdout= sp.PIPE))
+        user = str(user_name.stdout)
+        user = user[2:-3]
+        
+        coms_util = sp.run(['ps', '-o', 'pid', '-u', user], stdout=sp.PIPE)
+        coms_temp = str(coms_util.stdout)
+        coms_temp = coms_temp[11:]
+        coms_temp = coms_temp.split()
+        # print(coms_temp)
+
+        coms = []
+        for x in coms_temp:
+            coms.append(x[:-2])
+
+        coms[-1] = coms[-1][:-1]
+        
+        coms = list(map(int,coms))
+
+        # print(coms)
+
+        df = df.loc[df["pid"].isin(coms)]
+
         df = df.sort_values(by=[sortby], ascending = order)
         label = tk.Label(self, text=" ")
         label.grid(row=0, column=0, padx=2, sticky=tk.NW)
