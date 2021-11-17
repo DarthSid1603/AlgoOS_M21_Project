@@ -261,11 +261,11 @@ class Page3(Page):
         try:
             # check whether nvidia-smi is in the system
             if shutil.which("nvidia-smi"):
-                gpu_name = subprocess.check_output("nvidia-smi --query-gpu=gpu_name --format=csv,noheader",shell=True).decode().strip()
+                gpu_name = sp.check_output("nvidia-smi --query-gpu=gpu_name --format=csv,noheader",shell=True).decode().strip()
             # alternate method
             else:
                 # the first 50 chars only
-                gpu_name = subprocess.check_output('lspci | grep VGA | cut -d ":" -f3', shell=True).decode().strip()
+                gpu_name = sp.check_output('lspci | grep VGA | cut -d ":" -f3', shell=True).decode().strip()
         except:
             pass
         lab_gpu2 = tk.Label(frame_grid, text=gpu_name).grid(column=1, row=7, sticky="NW")
