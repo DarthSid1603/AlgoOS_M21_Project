@@ -269,6 +269,71 @@ class Page3(Page):
         except:
             pass
         lab_gpu2 = tk.Label(frame_grid, text=gpu_name).grid(column=1, row=7, sticky="NW")
+
+        # installed memory
+        lab_inst_mem = tk.Label(frame_grid, text="Installed Memory  ", foreground=frg_color).grid(column=0, row=8, sticky="NE")
+        lab_inst_mem2 = tk.Label(frame_grid, text=utilities.pretty_print(mem.total)).grid(column=1, row=8, sticky="NW")
+        
+        # swap
+        lab_swap = tk.Label(frame_grid, text="Swap  ", foreground=frg_color).grid(column=0, row=9, sticky="NE")
+        
+        u_swapmem = 0
+        try:
+            u_swapmem = mswap.total
+            if u_swapmem == None:
+                u_swapmem = 0
+        except:
+            u_swapmem = 0
+        
+        lab_swap2 = tk.Label(frame_grid, text=utilities.pretty_print(u_swapmem)).grid(column=1, row=9, sticky="NW")
+        
+        # root or home disk size
+        # partitions
+        partitions = psutil.disk_partitions(all=False)
+        num_partitions = len(partitions)
+        # check the moutpoint
+        home_partition = ""
+        for i in range(num_partitions):
+            if partitions[i].mountpoint == "/":
+                root_partition = partitions[i].device
+                root_fstype = partitions[i].fstype
+                root_disk_usage = psutil.disk_usage('/')
+                root_disk_total = utilities.pretty_print(root_disk_usage.total)
+            if partitions[i].mountpoint == "/home":
+                home_partition = partitions[i].device
+                home_fstype = partitions[i].fstype
+                home_disk_usage = psutil.disk_usage('/home')
+                home_disk_total = utilities.pretty_print(home_disk_usage.total)
+        # root disk size
+        lab_root_disk_size = tk.Label(frame_grid, text="Disk Size  ", foreground=frg_color).grid(column=0, row=10, sticky="NE")
+        lab_root_disk_size2 = tk.Label(frame_grid, text=root_disk_total).grid(column=1, row=10, sticky="NW")
+        # root device and type
+        lab_root_disk_type = tk.Label(frame_grid, text="Root Device and Type  ", foreground=frg_color).grid(column=0, row=11, sticky="NE")
+        root_dev_type = root_partition + " - " + root_fstype
+        lab_root_disk_type2 = tk.Label(frame_grid, text=root_dev_type).grid(column=1, row=11, sticky="NW")
+        
+        # if the home partition is present
+        if home_partition != "":
+            # home disk size
+            lab_home_disk_size = tk.Label(frame_grid, text="Home Size  ", foreground=frg_color).grid(column=0, row=12, sticky="NE")
+            lab_home_disk_size2 = tk.Label(frame_grid, text=home_disk_total).grid(column=1, row=12, sticky="NW")
+        
+            # home device and type
+            lab_home_disk_type = tk.Label(frame_grid, text="Home Device and Type  ", foreground=frg_color).grid(column=0, row=13, sticky="NE")
+            home_dev_type = home_partition + " - " + home_fstype
+            lab_home_disk_type2 = tk.Label(frame_grid, text=root_dev_type).grid(column=1, row=13, sticky="NW")
+        
+        # battery - static info : not tested
+        if PSUTIL_V > (5,1,0):
+            battery = psutil.sensors_battery()
+            if battery != None:
+                lab_battery = tk.Label(frame_grid, text="Battery  ", foreground=frg_color).grid(column=0, row=14, sticky="NE")
+                #
+                bsec = int(battery.secsleft)
+
+                label12 = str(battery.percent)+"% "
+                #
+                lab_battery2 = tk.Label(frame_grid, text=label12).grid(column=1, row=14, sticky="NW")
        
       
 class MainView(tk.Frame):
