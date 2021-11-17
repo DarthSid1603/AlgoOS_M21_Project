@@ -12,6 +12,13 @@ import collections
 import numpy as np
 import time
 
+def pretty_print(mem):
+    for start in ['', 'K', 'M', 'G', 'T', 'P']:
+        if mem < 1024:
+            return f"{mem:.2f}{start}B"
+        mem /= 1024
+
+
 def animate(i, cpu, ram, ax, ax1):
 
     # get data
@@ -51,12 +58,40 @@ class Processes(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
         Processes.render(self)
+        Processes.kill_button(self)
+
+    def kill_proc(self, inputtxt):
+        inp = inputtxt.get(1.0, "end-1c")
+        kill_pid = int(inp)
+        #print(kill_pid)
+        proc = psutil.Process(kill_pid)
+        proc.kill()
+        inputtxt.delete(1.0,tk.END)
+        Processes.render(self)
+
+    def kill_button(self):
+        frame2 = tk.Frame(self)
+
+        inputtxt = tk.Text(frame2,
+                   height = 5,
+                   width = 20)
+        inputtxt.pack(side = "right")
+
+        frame2.grid(row = 3, column=0, padx=2, sticky=tk.SE)
+        kill_Button = tk.Button(frame2,
+                        text = "Kill", 
+                        command = lambda: Processes.kill_proc(self, inputtxt))
+        kill_Button.pack()
+
+        label2 = tk.Label(frame2, text = "")
+        label2.pack()
         
     def render(self,sortby="pid",order = True):       
        
         process_infos = utilities.info_of_process()
         df = pd.DataFrame(process_infos)
-        # df = df.head()
+        df['Memory_Used'] = df['Memory_Used'].apply(pretty_print)
+        #df = df.tail()
         cust_cols = ["pid","name","cpu_usage_percent","status","Memory_Used","Wait_Bound","Power_Consumption(in uJ)"]
         df = df[cust_cols]
         df = df.sort_values(by=[sortby], ascending = order)
