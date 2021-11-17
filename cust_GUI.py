@@ -32,7 +32,9 @@ class Processes(Page):
         frame3.grid(row = 3, column=0, padx=2, sticky=tk.NW)
         refresh_Button = tk.Button(frame3,
                         text = "Refresh", 
-                        command = lambda: Processes.render(self))
+                        command = lambda: Processes.render(self),
+                        bg = "blue",
+                        fg = "green")
         refresh_Button.pack(side = "left")
 
         label3 = tk.Label(frame3, text = "")
@@ -51,18 +53,23 @@ class Processes(Page):
         frame2 = tk.Frame(self)
 
         inputtxt = tk.Text(frame2,
-                   height = 5,
-                   width = 20)
+                   height = 2,
+                   width = 15)
         inputtxt.pack(side = "right")
 
         frame2.grid(row = 3, column=0, padx=2, sticky=tk.SE)
+        #label4 = tk.Label(frame2, text = "")
+        #label4.pack()
+
         kill_Button = tk.Button(frame2,
                         text = "Kill", 
-                        command = lambda: Processes.kill_proc(self, inputtxt))
+                        command = lambda: Processes.kill_proc(self, inputtxt),
+                        bg = "red",
+                        fg = "yellow")
         kill_Button.pack()
 
-        label2 = tk.Label(frame2, text = "")
-        label2.pack()
+        #label2 = tk.Label(frame2, text = "")
+        #label2.pack()
         
     def render(self,sortby="pid",order = True):       
        
