@@ -172,7 +172,8 @@ class Processes(Page):
 class CPU_Usage(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
-        
+        label = tk.Label(self, text=" ")
+        label.pack(side="top", fill="both")
         fig = Figure(figsize = (7, 6), dpi = 100)
         plot1 = fig.add_subplot(121)
         plot2 = fig.add_subplot(122)
@@ -335,13 +336,93 @@ class Page3(Page):
                 #
                 lab_battery2 = tk.Label(frame_grid, text=label12).grid(column=1, row=14, sticky="NW")
        
-      
+class Page4(Page):
+   def __init__(self, *args, **kwargs):
+        Page.__init__(self, *args, **kwargs)
+        label = tk.Label(self, text=" ")
+        label.pack(side="top", fill="both")
+        frg_color = "gray40"    
+        self.llogo = tk.PhotoImage(file="./icon/page4_2.png")
+        lab_logo = tk.Label(self, image=self.llogo)
+        lab_logo.pack(side="left", anchor="nw")
+        uname_list = os.uname()
+        mem = psutil.virtual_memory()
+        mswap = psutil.swap_memory()
+        PSUTIL_V = psutil.version_info
+        tnet = psutil.net_io_counters()
+        u_swapmem = 0
+        try:
+            u_swapmem = mswap.total
+            if u_swapmem == None:
+                u_swapmem = 0
+        except:
+            u_swapmem = 0
+        frame1 = tk.Frame(self)
+        frame1.pack(side="left", anchor="n")
+        lab_memory = tk.Label(frame1, text="\n Memory").grid(column=0, row=0, sticky="NW")
+        # installed memory
+        lab_inst_memory = tk.Label(frame1, text="Installed Memory  ", foreground=frg_color).grid(column=1, row=1, sticky="NE")
+        inst_mem = utilities.pretty_print(mem.total)
+        lab_inst_memory2 = tk.Label(frame1, text=inst_mem).grid(column=2, row=1, sticky="NW")
+        # memory available
+        lab_avail_memory = tk.Label(frame1, text="Available Memory  ", foreground=frg_color).grid(column=1, row=2, sticky="NE")
+        avail_mem = utilities.pretty_print(mem.available)
+        lab_avail_memory2 = tk.Label(frame1, text=avail_mem).grid(column=2, row=2, sticky="NW")
+        # used memory
+        lab_used_memory = tk.Label(frame1, text="Used Memory  ", foreground=frg_color).grid(column=1, row=3, sticky="NE")
+        used_mem = utilities.pretty_print(mem.used)
+        lab_used_memory2 = tk.Label(frame1, text=used_mem).grid(column=2, row=3, sticky="NW")
+        # freee memory
+        lab_free_memory = tk.Label(frame1, text="Free Memory  ", foreground=frg_color).grid(column=1, row=4, sticky="NE")
+        free_mem = utilities.pretty_print(mem.free)
+        lab_free_memory2 = tk.Label(frame1, text=free_mem).grid(column=2, row=4, sticky="NW")
+        # buffer/cache
+        lab_buff_memory = tk.Label(frame1, text="Buff/Cached Memory  ", foreground=frg_color).grid(column=1, row=5, sticky="NE")
+        buff_mem = utilities.pretty_print(mem.buffers+mem.cached)
+        lab_buff_memory2 = tk.Label(frame1, text=buff_mem).grid(column=2, row=5, sticky="NW")
+        # shared memory
+        lab_shared_memory = tk.Label(frame1, text="Shared Memory  ", foreground=frg_color).grid(column=1, row=6, sticky="NE")
+        shared_mem = utilities.pretty_print(mem.shared)
+        lab_shared_memory2 = tk.Label(frame1, text=shared_mem).grid(column=2, row=6, sticky="NW")
+        
+        ## Swap
+        lab_swap = tk.Label(frame1, text="\n Swap").grid(column=0, row=7, sticky="NW")
+        # total
+        lab_total_swap = tk.Label(frame1, text="Total  ", foreground=frg_color).grid(column=1, row=8, sticky="NE")
+        total_swap = utilities.pretty_print(mswap.total) or ""
+        lab_total_swap2 = tk.Label(frame1, text=total_swap).grid(column=2, row=8, sticky="NW")
+        # used - if it exists
+        if u_swapmem > 0:
+            lab_used_swap = tk.Label(frame1, text="Used  ", foreground=frg_color).grid(column=1, row=9, sticky="NE")
+            used_swap = utilities.pretty_print(mswap.used)+" ("+str(mswap.percent)+"%)"
+            lab_used_swap2 = tk.Label(frame1, text=used_swap).grid(column=2, row=9, sticky="NW")
+        
+        ## net
+        lab_net = tk.Label(frame1, text="\n Net").grid(column=0, row=10, sticky="NW")
+        # bytes/packets received
+        lab_bytes_recv = tk.Label(frame1, text="bytes/packets received  ", foreground=frg_color).grid(column=1, row=11, sticky="NE")
+        bytes_recv = str(utilities.pretty_print(tnet.bytes_recv))+" - "+str(tnet.packets_recv)
+        lab_bytes_recv2 = tk.Label(frame1, text=bytes_recv).grid(column=2, row=11, sticky="NW")
+        # bytes/packets sent
+        lab_bytes_sent = tk.Label(frame1, text="bytes/packets sent  ", foreground=frg_color).grid(column=1, row=12, sticky="NE")
+        bytes_sent = str(utilities.pretty_print(tnet.bytes_sent))+" - "+str(tnet.packets_sent)
+        lab_bytes_sent2 = tk.Label(frame1, text=bytes_sent).grid(column=2, row=12, sticky="NW")
+        # errin/dropin
+        lab_errin = tk.Label(frame1, text="errin/dropin  ", foreground=frg_color).grid(column=1, row=13, sticky="NE")
+        errin = str(tnet.errin)+" - "+str(tnet.dropin)
+        lab_errin2 = tk.Label(frame1, text=errin).grid(column=2, row=13, sticky="NW")
+        # errout/dropout
+        lab_errout = tk.Label(frame1, text="errout/dropout  ", foreground=frg_color).grid(column=1, row=14, sticky="NE")
+        errout = str(tnet.errout)+" - "+str(tnet.dropout)
+        lab_errout2 = tk.Label(frame1, text=errout).grid(column=2, row=14, sticky="NW")
+
 class MainView(tk.Frame):
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
         p1 = Processes(self)
         p2 = CPU_Usage(self)
         p3 = Page3(self)
+        p4 = Page4(self)
 
         buttonframe = tk.Frame(self)
         container = tk.Frame(self)
@@ -351,13 +432,17 @@ class MainView(tk.Frame):
         p1.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
         p2.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
         p3.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
+        p4.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
 
         b1 = tk.Button(buttonframe, text="Processes", command=p1.show)
         b2 = tk.Button(buttonframe, text="CPU Details", command=p2.show)
         b3 = tk.Button(buttonframe, text="System Summary", command=p3.show)
+        b4 = tk.Button(buttonframe, text="Memory and Network", command=p4.show)
+
 
         b1.pack(side="left")
         b2.pack(side="left")
         b3.pack(side="left")
-        p1.show()
+        b4.pack(side="left")
+        p4.show()
 
