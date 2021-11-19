@@ -94,28 +94,33 @@ def pretty_print(mem):
 
 def animate(i, cpu, ram, ax, ax1):
 
-    # get data
-    cpu.popleft()
-    cpu.append(pu.cpu_percent())
-    ram.popleft()
-    ram.append(pu.virtual_memory().percent)    
-    
     # clear axis
-    ax.cla()
-    ax1.cla()    
+    ax.clear()
+    ax1.clear()
+
+    # get data
+    if(len(cpu)>=20):
+        cpu = cpu[-20:]
+    cpu.append(pu.cpu_percent())
+    if(len(ram)>=20):
+        ram = ram[-20:]
+    ram.append(pu.virtual_memory().percent)    
+
+    x_len = len(cpu)-1
+    
     
     # plot cpu
     ax.plot(cpu)
     ax.title.set_text("CPU Usage")
-    ax.scatter(len(cpu)-1, cpu[-1])
-    ax.text(len(cpu)-1, cpu[-1]+2, "{}%".format(cpu[-1]))
+    ax.scatter(x_len, cpu[-1])
+    ax.text(x_len-.5, cpu[-1]+2, "{}%".format(cpu[-1]))
     ax.set_ylim(0,100)    
     ax.grid()
     
     # plot memory
     ax1.plot(ram)
-    ax1.title.set_text("Memory Usage")
-    ax1.scatter(len(ram)-1, ram[-1])
-    ax1.text(len(ram)-1, ram[-1]+2, "{}%".format(ram[-1]))
+    ax1.title.set_text("RAM Usage")
+    ax1.scatter(x_len, ram[-1])
+    ax1.text(x_len-.5, ram[-1]+2, "{}%".format(ram[-1]))
     ax1.set_ylim(0,100)
     ax1.grid()

@@ -174,12 +174,12 @@ class CPU_Usage(Page):
         Page.__init__(self, *args, **kwargs)
         label = tk.Label(self, text=" ")
         label.pack(side="top", fill="both")
-        fig = Figure(figsize = (7, 6), dpi = 100)
+        fig = Figure(figsize = (7, 5), dpi = 100)
         plot1 = fig.add_subplot(121)
         plot2 = fig.add_subplot(122)
 
-        cpu = collections.deque(np.zeros(20))
-        ram = collections.deque(np.zeros(20))
+        cpu = [0]
+        ram = [0]
 
         # plotting the graph
 
