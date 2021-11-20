@@ -444,5 +444,5 @@ class MainView(tk.Frame):
         b2.pack(side="left")
         b3.pack(side="left")
         b4.pack(side="left")
-        p4.show()
+        p1.show()
 
