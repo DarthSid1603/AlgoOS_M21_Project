@@ -113,6 +113,7 @@ def animate(i, cpu, ram, ax, ax1):
     ax.scatter(x_len, cpu[-1])
     ax.text(x_len-.5, cpu[-1]+2, "{}%".format(cpu[-1]))
     ax.set_ylim(0,100)    
+    ax.set_xticks([])
     ax.grid()
     
     # plot memory
@@ -121,4 +122,5 @@ def animate(i, cpu, ram, ax, ax1):
     ax1.scatter(x_len, ram[-1])
     ax1.text(x_len-.5, ram[-1]+2, "{}%".format(ram[-1]))
     ax1.set_ylim(0,100)
+    ax1.set_xticks([])
     ax1.grid()
