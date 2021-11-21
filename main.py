@@ -1,9 +1,9 @@
 import utilities
 import pandas as pd
-import cust_GUI as GUI
 import tkinter as tk
+import cust_GUI as GUI
 
-
+# Main Tab of Task Manager
 if __name__ == "__main__":
     win = tk.Tk()
     win.title(string="Task Manager")

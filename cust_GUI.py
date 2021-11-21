@@ -2,9 +2,11 @@ import utilities
 import pandas as pd
 import utilities
 import tkinter as tk
+from tkinter import messagebox
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from tabulate import tabulate
 import psutil
 import datetime as dt
 import matplotlib.animation as animation
@@ -12,17 +14,19 @@ import collections
 import numpy as np
 import os
 import shutil
+import GPUtil
+import platform
 import subprocess as sp
 
 
-
-
+# Defining Main Page
 class Page(tk.Frame):
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
     def show(self):
         self.lift()
 
+# Tab 1 : Processes
 class Processes(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
@@ -30,6 +34,7 @@ class Processes(Page):
         Processes.kill_button(self)
         Processes.refresh_button(self)
 
+    # Refresh Button Implementation
     def refresh_button(self):
         frame3 = tk.Frame(self)
 
@@ -43,17 +48,27 @@ class Processes(Page):
                         fg = "white")
         refresh_Button.pack(side = "left")
 
-        
+    # Message Box For Killing Process
+    def messageconfirm(self, inputtxt):
+        answer = tk.messagebox.askyesno(title='confirmation', message='Are you sure to kill the process?')
 
+        if answer:
+            Processes.kill_proc(self, inputtxt)
+        else:
+            tk.messagebox.showinfo('Return','You will now return to the application screen')
+            inputtxt.delete(1.0,tk.END)
+            Processes.render(self)
+
+    # Process Killing
     def kill_proc(self, inputtxt):
         inp = inputtxt.get(1.0, "end-1c")
         kill_pid = int(inp)
-        #print(kill_pid)
         proc = psutil.Process(kill_pid)
         proc.kill()
         inputtxt.delete(1.0,tk.END)
         Processes.render(self)
 
+    # Kill Process Button Implementation
     def kill_button(self):
         frame2 = tk.Frame(self)
 
@@ -67,17 +82,15 @@ class Processes(Page):
         frame2.grid(row = 3, column=0, padx=2, sticky=tk.SE)
         kill_Button = tk.Button(frame2,
                         text = "Kill", 
-                        command = lambda: Processes.kill_proc(self, inputtxt),
+                        command = lambda: Processes.messageconfirm(self, inputtxt),
                         bg = "red",
                         fg = "white")
         kill_Button.pack()
 
-        
-    def render(self,sortby="pid",order = True):       
-       
+    # Table Showing all process and refresh the database    
+    def render(self,sortby="pid",order = True):
         process_infos = utilities.info_of_process()
         df = pd.DataFrame(process_infos)
-        #df = df.tail()
         cust_cols = ["pid","name","cpu_usage_percent","status","Memory_Used","Wait_Bound","Power_Consumption(in uJ)"]
         df = df[cust_cols]
 
@@ -89,21 +102,15 @@ class Processes(Page):
         coms_temp = str(coms_util.stdout)
         coms_temp = coms_temp[11:]
         coms_temp = coms_temp.split()
-        # print(coms_temp)
-
         coms = []
         for x in coms_temp:
             coms.append(x[:-2])
-
-        coms[-1] = coms[-1][:-1]
-        
+        coms[-1] = coms[-1][:-1]        
         coms = list(map(int,coms))
-
-        # print(coms)
-
+        
         df = df.loc[df["pid"].isin(coms)]
-
         df = df.sort_values(by=[sortby], ascending = order)
+        
         label = tk.Label(self, text=" ")
         label.grid(row=0, column=0, padx=2, sticky=tk.NW)
         widths = [5,15,10,11,11,11,20]
@@ -117,7 +124,6 @@ class Processes(Page):
         b6 = tk.Button(frame1, text="Wait Bound",command=lambda:Processes.render(self,"Wait_Bound",(not order)),width = widths[5]-2)
         b7 = tk.Button(frame1, text="Power Consumption(in uJ)",command=lambda:Processes.render(self,"Power_Consumption(in uJ)",(not order)),width = widths[6]-2)
         
-
         b1.pack(side="left")
         b2.pack(side="left")
         b3.pack(side="left")
@@ -146,8 +152,7 @@ class Processes(Page):
 
         # Create a frame on canvas2 to contain the labels
         labels_frame = tk.Frame(canvas2)
-
-        
+    
         # Add the labels to this frame
         for i in range(df.shape[0]):
             for j in range(df.shape[1]):
@@ -165,65 +170,106 @@ class Processes(Page):
         bbox = canvas2.bbox(tk.ALL)  # Get bounding box of canvas2
         w, h = bbox[2]-bbox[1], bbox[3]-bbox[1]
         canvas2.configure(scrollregion=bbox, width=min(800, w), height=min(400, h))
-    
-        
-            
-
+                 
+# Tab 2 : CPU Usage
 class CPU_Usage(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
         label = tk.Label(self, text=" ")
         label.pack(side="top", fill="both")
-        fig = Figure(figsize = (7, 5), dpi = 100)
+
+        # Graph definition        
+        fig = plt.figure(figsize = (7, 5), dpi = 100)
         plot1 = fig.add_subplot(121)
+        # ax.set_xlabel("Time (in sec.)")
+        # ax.set_ylabel("Percentage used (%)")
         plot2 = fig.add_subplot(122)
+        # ax.set_xlabel("Time (in sec.)")
+        # ax.set_ylabel("Percentage used (%)")
+        # fig = plt.figure(figsize = [30, 15], dpi = 100)
+        # plot1 = fig.add_subplot(121)
+        # plt.xlabel('Time (in sec.)')
+        # plt.ylabel('Percentage used (%)')
+        # # plt.title('Original Image', fontsize=30)
+        # plot2 = fig.add_subplot(122)
+        # # plt.title('Histogram', fontsize=30)
+        # plt.xlabel('Time (in sec.)')
+        # plt.ylabel('Percentage used (%)')
 
         cpu = [0]
         ram = [0]
 
-        # plotting the graph
-
-        
-        # creating the Tkinter canvas
-        # containing the Matplotlib figure
+        # Create Tkinter canvas with matplotlib figure
         canvas = FigureCanvasTkAgg(fig, self)  
         ani = animation.FuncAnimation(fig, utilities.animate, fargs=(cpu, ram, plot1, plot2), interval=1000)
         canvas.draw()
        
-        # placing the canvas on the Tkinter window
+        # Placing canvas on the Main window
         canvas.get_tk_widget().pack()
             
-
-class Page3(Page):
-   def __init__(self, *args, **kwargs):
+# Tab 3 : System Summary : 
+class SystemSummary(Page):
+    def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
+        SystemSummary.render(self)
+        SystemSummary.refresh_button(self)
+
+    def refresh_button(self):
+        frames1 = tk.Frame(self)
+        # frames1.grid(row = 0, column=0, padx=2, sticky=tk.NW)
+        refresh_Button = tk.Button(frames1,
+                        text = "Refresh", 
+                        command = lambda: SystemSummary.render(self),
+                        bg = "blue",
+                        fg = "white")
+        refresh_Button.pack(side = "left")
+
+    def gpuname():
+    # """Returns the model name of the first available GPU"""
+        try:
+            gpus = GPUtil.getGPUs()
+        except:
+            LOGGER.warning("Unable to detect GPU model. Is your GPU configured? Are you running with nvidia-docker?")
+            return "UNKNOWN"
+        if len(gpus) == 0:
+            raise ValueError("No GPUs detected in the system")
+        return gpus[0].name 
+
+    def render(self):
         label = tk.Label(self, text=" ")
         label.pack(side="top", fill="both")
         frg_color = "gray40"
+        
+        # Images 
         self.llogo = tk.PhotoImage(file="./icon/image.png")
         lab_logo = tk.Label(self, image=self.llogo)
         lab_logo.pack(side="left", anchor="nw")
-        uname_list = os.uname()
+        
+        
         frame_grid = tk.Frame(self)
         mem = psutil.virtual_memory()
         mswap = psutil.swap_memory()
         PSUTIL_V = psutil.version_info
         frame_grid.pack(side="left", anchor="n")
-        # empty label
-        lab_empty = tk.Label(frame_grid, text="").grid(column=0, row=0)
-        # user name
+        
+        create_space = tk.Label(frame_grid, text="").grid(column=0, row=0)
+        
+        # OS DETAILS
+        # Username Details
+        uname_list = os.uname()
         lab_un = tk.Label(frame_grid, text="User Name  ", foreground=frg_color).grid(column=0, row=1, sticky="NE")
         u_username = psutil.Process().username()
         lab_un2 = tk.Label(frame_grid, text=u_username).grid(column=1, row=1, sticky="NW")
-        # Network PC name
-        lab_netnm = tk.Label(frame_grid, text="Network PC name  ", foreground=frg_color).grid(column=0, row=2, sticky="NE")
+        
+        # Node name
+        lab_netnm = tk.Label(frame_grid, text="PC Name  ", foreground=frg_color).grid(column=0, row=2, sticky="NE")
         lab_netnm2 = tk.Label(frame_grid, text=uname_list.nodename).grid(column=1, row=2, sticky="NW")
 
-        # Distro
-        lab_distronm = tk.Label(frame_grid, text="Distro  ", foreground=frg_color).grid(column=0, row=3, sticky="NE")
+        # Distribution
+        lab_distronm = tk.Label(frame_grid, text="Distribution  ", foreground=frg_color).grid(column=0, row=3, sticky="NE")
         lab_distronm2 = tk.Label(frame_grid, text=(uname_list.sysname or "None")).grid(column=1, row=3, sticky="NW")
         
-        # kernel version
+        # Kernel Version
         lab_kernel = tk.Label(frame_grid, text="Kernel Version  ", foreground=frg_color).grid(column=0, row=4, sticky="NE")
         kernel_release = uname_list.release
         lab_kernel2 = tk.Label(frame_grid, text=kernel_release).grid(column=1, row=4, sticky="NW")
@@ -235,37 +281,49 @@ class Page3(Page):
         
         # processor
         lab_cpu = tk.Label(frame_grid, text="Processor  ", foreground=frg_color).grid(column=0, row=6, sticky="NE")
-        # processor
-        u_proc_num = psutil.cpu_count()
-        u_proc_num_real = psutil.cpu_count(logical=False)
-        u_proc_model_name = ""
-        u_proc_model = ""
+        
+        totalCores = psutil.cpu_count()
+        physicalCores = psutil.cpu_count(logical=False)
+        modelName = ""
+        model = ""
         try:
+            # command = "cat /proc/cpuinfo"
+            # u_proc_model = sp.check_output(command, shell=True).strip()
             f = open('/proc/cpuinfo', 'r')
             for line in f:
                 if line.rstrip('\n').startswith('model name'):
-                    u_proc_model_name = line.rstrip('\n').split(':')[1].strip()
+                    modelName = line.rstrip('\n').split(':')[1].strip()
                     break
             f.close()
         except:
-            u_proc_model_name("#")
-        if u_proc_num_real == u_proc_num:
-            u_proc_model = u_proc_model_name+" x "+str(u_proc_num_real)
+            modelName("#")
+        if physicalCores == totalCores:
+            model = modelName+" x "+str(physicalCores)
         else:
-            u_proc_model = u_proc_model_name+" x ("+str(u_proc_num_real)+"+"+str(u_proc_num)+")"
-        lab_processor2 = tk.Label(frame_grid, text=u_proc_model).grid(column=1, row=6, sticky="NW")
+            model = modelName+" x ("+str(physicalCores)+"+"+str(totalCores)+")"
+        lab_processor2 = tk.Label(frame_grid, text=model).grid(column=1, row=6, sticky="NW")
+        # if platform.system() == "Windows":
+        #     ans =  platform.processor()
+        # elif platform.system() == "Darwin":
+        #     ans =  sp.check_output(['/usr/sbin/sysctl', "-n", "machdep.cpu.brand_string"]).strip()
+        # elif platform.system() == "Linux":
+        #     command = "cat /proc/cpuinfo"
+        #     ans = sp.check_output(command, shell=True).strip()
+        # lab_processor2 = tk.Label(frame_grid, text=ans).grid(column=1, row=6, sticky="NW")
         
-        # Gpu
-        lab_gpu = tk.Label(frame_grid, text="Gpu  ", foreground=frg_color).grid(column=0, row=7, sticky="NE")
-        # gpu name
+        # GPU
+        lab_gpu = tk.Label(frame_grid, text="GPU  ", foreground=frg_color).grid(column=0, row=7, sticky="NE")
+        
+        # gpus = GPUtil.getGPUs()
+        # gpu_name = "#"
+        
+        # gpu_name = SystemSummary.gpuname()
+        
         gpu_name = "#"
         try:
-            # check whether nvidia-smi is in the system
             if shutil.which("nvidia-smi"):
                 gpu_name = sp.check_output("nvidia-smi --query-gpu=gpu_name --format=csv,noheader",shell=True).decode().strip()
-            # alternate method
             else:
-                # the first 50 chars only
                 gpu_name = sp.check_output('lspci | grep VGA | cut -d ":" -f3', shell=True).decode().strip()
         except:
             pass
@@ -324,19 +382,16 @@ class Page3(Page):
             home_dev_type = home_partition + " - " + home_fstype
             lab_home_disk_type2 = tk.Label(frame_grid, text=root_dev_type).grid(column=1, row=13, sticky="NW")
         
-        # battery - static info : not tested
-        if PSUTIL_V > (5,1,0):
-            battery = psutil.sensors_battery()
-            if battery != None:
-                lab_battery = tk.Label(frame_grid, text="Battery  ", foreground=frg_color).grid(column=0, row=14, sticky="NE")
-                #
-                bsec = int(battery.secsleft)
+        # if PSUTIL_V > (5,1,0):
+        battery = psutil.sensors_battery()
+        if battery != None:
+            lab_battery = tk.Label(frame_grid, text="Battery  ", foreground=frg_color).grid(column=0, row=14, sticky="NE")
+            label12 = str(battery.percent)+"% "
+            #
+            lab_battery2 = tk.Label(frame_grid, text=label12).grid(column=1, row=14, sticky="NW")
 
-                label12 = str(battery.percent)+"% "
-                #
-                lab_battery2 = tk.Label(frame_grid, text=label12).grid(column=1, row=14, sticky="NW")
-       
-class Page4(Page):
+# Tab 4 : Memory and Network Details
+class MemoryAndNetwork(Page):
    def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
         label = tk.Label(self, text=" ")
@@ -347,16 +402,8 @@ class Page4(Page):
         lab_logo.pack(side="left", anchor="nw")
         uname_list = os.uname()
         mem = psutil.virtual_memory()
-        mswap = psutil.swap_memory()
         PSUTIL_V = psutil.version_info
-        tnet = psutil.net_io_counters()
-        u_swapmem = 0
-        try:
-            u_swapmem = mswap.total
-            if u_swapmem == None:
-                u_swapmem = 0
-        except:
-            u_swapmem = 0
+        
         frame1 = tk.Frame(self)
         frame1.pack(side="left", anchor="n")
         lab_memory = tk.Label(frame1, text="\n Memory").grid(column=0, row=0, sticky="NW")
@@ -386,16 +433,30 @@ class Page4(Page):
         lab_shared_memory2 = tk.Label(frame1, text=shared_mem).grid(column=2, row=6, sticky="NW")
         
         ## Swap
+        mswap = psutil.swap_memory()
+        tnet = psutil.net_io_counters()
+        u_swapmem = 0
+        try:
+            u_swapmem = mswap.total
+            if u_swapmem == None:
+                u_swapmem = 0
+        except:
+            u_swapmem = 0
         lab_swap = tk.Label(frame1, text="\n Swap").grid(column=0, row=7, sticky="NW")
         # total
         lab_total_swap = tk.Label(frame1, text="Total  ", foreground=frg_color).grid(column=1, row=8, sticky="NE")
         total_swap = utilities.pretty_print(mswap.total) or ""
         lab_total_swap2 = tk.Label(frame1, text=total_swap).grid(column=2, row=8, sticky="NW")
         # used - if it exists
-        if u_swapmem > 0:
+        if u_swapmem > 0:          
+
             lab_used_swap = tk.Label(frame1, text="Used  ", foreground=frg_color).grid(column=1, row=9, sticky="NE")
             used_swap = utilities.pretty_print(mswap.used)+" ("+str(mswap.percent)+"%)"
             lab_used_swap2 = tk.Label(frame1, text=used_swap).grid(column=2, row=9, sticky="NW")
+
+            lab_free_swap = tk.Label(frame1, text="Free  ", foreground=frg_color).grid(column=1, row=15, sticky="NE")
+            free_swap = utilities.pretty_print(mswap.free)
+            lab_free_swap2 = tk.Label(frame1, text=free_swap).grid(column=2, row=15, sticky="NW")
         
         ## net
         lab_net = tk.Label(frame1, text="\n Net").grid(column=0, row=10, sticky="NW")
@@ -416,13 +477,16 @@ class Page4(Page):
         errout = str(tnet.errout)+" - "+str(tnet.dropout)
         lab_errout2 = tk.Label(frame1, text=errout).grid(column=2, row=14, sticky="NW")
 
+        # lab_net = tk.Label(frame1, text="\n Network Interfaces").grid(column=0, row=10, sticky="NW")
+
+
 class MainView(tk.Frame):
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
         p1 = Processes(self)
         p2 = CPU_Usage(self)
-        p3 = Page3(self)
-        p4 = Page4(self)
+        p3 = SystemSummary(self)
+        p4 = MemoryAndNetwork(self)
 
         buttonframe = tk.Frame(self)
         container = tk.Frame(self)
@@ -445,4 +509,3 @@ class MainView(tk.Frame):
         b3.pack(side="left")
         b4.pack(side="left")
         p1.show()
-
