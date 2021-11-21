@@ -69,10 +69,10 @@ class Processes(Page):
                 proc = psutil.Process(kill_pid)
                 proc.kill()
                 inputtxt.delete(1.0,tk.END)
-                #tk.messagebox.showinfo("Success","The Process with given PID has been successfully terminated.")
+                tk.messagebox.showinfo("Success","The Process with given PID has been successfully terminated.")
                 Processes.render(self)
-            #else:
-            #    tk.messagebox.showwarning("Warning", "The Process with the given PID does not exist.")
+            else:
+                tk.messagebox.showwarning("Warning", "The Process with the given PID does not exist.")
         except psutil.AccessDenied:
             tk.messagebox.showwarning("Warning", "Important System Process, cannot be terminated.")
 
