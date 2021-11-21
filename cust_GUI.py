@@ -196,8 +196,8 @@ class CPU_Usage(Page):
         # plt.xlabel('Time (in sec.)')
         # plt.ylabel('Percentage used (%)')
 
-        cpu = [0]
-        ram = [0]
+        cpu = collections.deque(np.zeros(25))
+        ram = collections.deque(np.zeros(25))
 
         # Create Tkinter canvas with matplotlib figure
         canvas = FigureCanvasTkAgg(fig, self)  
