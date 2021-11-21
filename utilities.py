@@ -99,11 +99,9 @@ def animate(i, cpu, ram, ax, ax1):
     ax1.clear()
 
     # get data
-    if(len(cpu)>=20):
-        cpu = cpu[-20:]
+    cpu.popleft()
     cpu.append(pu.cpu_percent())
-    if(len(ram)>=20):
-        ram = ram[-20:]
+    ram.popleft()
     ram.append(pu.virtual_memory().percent)    
 
     x_len = len(cpu)-1

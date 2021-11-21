@@ -178,8 +178,8 @@ class CPU_Usage(Page):
         plot1 = fig.add_subplot(121)
         plot2 = fig.add_subplot(122)
 
-        cpu = [0]
-        ram = [0]
+        cpu = collections.deque(np.zeros(25))
+        ram = collections.deque(np.zeros(25))
 
         # plotting the graph
 
