@@ -13,6 +13,7 @@ import matplotlib.animation as animation
 import collections
 import numpy as np
 import os
+import distro
 import shutil
 import GPUtil
 import platform
@@ -184,7 +185,7 @@ class CPU_Usage(Page):
         # ax.set_xlabel("Time (in sec.)")
         # ax.set_ylabel("Percentage used (%)")
         plot2 = fig.add_subplot(122)
-<<<<<<< HEAD
+# <<<<<<< HEAD
         # ax.set_xlabel("Time (in sec.)")
         # ax.set_ylabel("Percentage used (%)")
         # fig = plt.figure(figsize = [30, 15], dpi = 100)
@@ -196,21 +197,21 @@ class CPU_Usage(Page):
         # # plt.title('Histogram', fontsize=30)
         # plt.xlabel('Time (in sec.)')
         # plt.ylabel('Percentage used (%)')
-=======
->>>>>>> Corrected animation errors
+# =======
+# >>>>>>> Corrected animation errors
 
         cpu = collections.deque(np.zeros(25))
         ram = collections.deque(np.zeros(25))
 
-<<<<<<< HEAD
+# <<<<<<< HEAD
         # Create Tkinter canvas with matplotlib figure
-=======
+# =======
         # plotting the graph
 
         
         # creating the Tkinter canvas
         # containing the Matplotlib figure
->>>>>>> Corrected animation errors
+# >>>>>>> Corrected animation errors
         canvas = FigureCanvasTkAgg(fig, self)  
         ani = animation.FuncAnimation(fig, utilities.animate, fargs=(cpu, ram, plot1, plot2), interval=1000)
         canvas.draw()
@@ -273,12 +274,13 @@ class SystemSummary(Page):
         lab_un2 = tk.Label(frame_grid, text=u_username).grid(column=1, row=1, sticky="NW")
         
         # Node name
-        lab_netnm = tk.Label(frame_grid, text="PC Name  ", foreground=frg_color).grid(column=0, row=2, sticky="NE")
+        lab_netnm = tk.Label(frame_grid, text="Node Name  ", foreground=frg_color).grid(column=0, row=2, sticky="NE")
         lab_netnm2 = tk.Label(frame_grid, text=uname_list.nodename).grid(column=1, row=2, sticky="NW")
 
         # Distribution
         lab_distronm = tk.Label(frame_grid, text="Distribution  ", foreground=frg_color).grid(column=0, row=3, sticky="NE")
-        lab_distronm2 = tk.Label(frame_grid, text=(uname_list.sysname or "None")).grid(column=1, row=3, sticky="NW")
+        distri = distro.linux_distribution()
+        lab_distronm2 = tk.Label(frame_grid, text=(distri or "None")).grid(column=1, row=3, sticky="NW")
         
         # Kernel Version
         lab_kernel = tk.Label(frame_grid, text="Kernel Version  ", foreground=frg_color).grid(column=0, row=4, sticky="NE")
@@ -291,7 +293,7 @@ class SystemSummary(Page):
         lab_desktop2 = tk.Label(frame_grid, text=u_dmname).grid(column=1, row=5, sticky="NW")
         
         # processor
-        lab_cpu = tk.Label(frame_grid, text="Processor  ", foreground=frg_color).grid(column=0, row=6, sticky="NE")
+        lab_cpu = tk.Label(frame_grid, text="CPU  ", foreground=frg_color).grid(column=0, row=6, sticky="NE")
         
         totalCores = psutil.cpu_count()
         physicalCores = psutil.cpu_count(logical=False)
@@ -341,11 +343,11 @@ class SystemSummary(Page):
         lab_gpu2 = tk.Label(frame_grid, text=gpu_name).grid(column=1, row=7, sticky="NW")
 
         # installed memory
-        lab_inst_mem = tk.Label(frame_grid, text="Installed Memory  ", foreground=frg_color).grid(column=0, row=8, sticky="NE")
+        lab_inst_mem = tk.Label(frame_grid, text="RAM  ", foreground=frg_color).grid(column=0, row=8, sticky="NE")
         lab_inst_mem2 = tk.Label(frame_grid, text=utilities.pretty_print(mem.total)).grid(column=1, row=8, sticky="NW")
         
         # swap
-        lab_swap = tk.Label(frame_grid, text="Swap  ", foreground=frg_color).grid(column=0, row=9, sticky="NE")
+        lab_swap = tk.Label(frame_grid, text="Swap Memory ", foreground=frg_color).grid(column=0, row=9, sticky="NE")
         
         u_swapmem = 0
         try:
@@ -419,7 +421,7 @@ class MemoryAndNetwork(Page):
         frame1.pack(side="left", anchor="n")
         lab_memory = tk.Label(frame1, text="\n Memory").grid(column=0, row=0, sticky="NW")
         # installed memory
-        lab_inst_memory = tk.Label(frame1, text="Installed Memory  ", foreground=frg_color).grid(column=1, row=1, sticky="NE")
+        lab_inst_memory = tk.Label(frame1, text="RAM  ", foreground=frg_color).grid(column=1, row=1, sticky="NE")
         inst_mem = utilities.pretty_print(mem.total)
         lab_inst_memory2 = tk.Label(frame1, text=inst_mem).grid(column=2, row=1, sticky="NW")
         # memory available
@@ -460,33 +462,34 @@ class MemoryAndNetwork(Page):
         lab_total_swap2 = tk.Label(frame1, text=total_swap).grid(column=2, row=8, sticky="NW")
         # used - if it exists
         if u_swapmem > 0:          
-
-            lab_used_swap = tk.Label(frame1, text="Used  ", foreground=frg_color).grid(column=1, row=9, sticky="NE")
-            used_swap = utilities.pretty_print(mswap.used)+" ("+str(mswap.percent)+"%)"
-            lab_used_swap2 = tk.Label(frame1, text=used_swap).grid(column=2, row=9, sticky="NW")
-
-            lab_free_swap = tk.Label(frame1, text="Free  ", foreground=frg_color).grid(column=1, row=15, sticky="NE")
+            lab_free_swap = tk.Label(frame1, text="Free  ", foreground=frg_color).grid(column=1, row=9, sticky="NE")
             free_swap = utilities.pretty_print(mswap.free)
-            lab_free_swap2 = tk.Label(frame1, text=free_swap).grid(column=2, row=15, sticky="NW")
+            lab_free_swap2 = tk.Label(frame1, text=free_swap).grid(column=2, row=9, sticky="NW")
+
+            lab_used_swap = tk.Label(frame1, text="Used  ", foreground=frg_color).grid(column=1, row=10, sticky="NE")
+            used_swap = utilities.pretty_print(mswap.used)+" ("+str(mswap.percent)+"%)"
+            lab_used_swap2 = tk.Label(frame1, text=used_swap).grid(column=2, row=10, sticky="NW")
+
+            
         
         ## net
         lab_net = tk.Label(frame1, text="\n Net").grid(column=0, row=10, sticky="NW")
         # bytes/packets received
-        lab_bytes_recv = tk.Label(frame1, text="bytes/packets received  ", foreground=frg_color).grid(column=1, row=11, sticky="NE")
+        lab_bytes_recv = tk.Label(frame1, text="bytes/packets received  ", foreground=frg_color).grid(column=1, row=12, sticky="NE")
         bytes_recv = str(utilities.pretty_print(tnet.bytes_recv))+" - "+str(tnet.packets_recv)
-        lab_bytes_recv2 = tk.Label(frame1, text=bytes_recv).grid(column=2, row=11, sticky="NW")
+        lab_bytes_recv2 = tk.Label(frame1, text=bytes_recv).grid(column=2, row=12, sticky="NW")
         # bytes/packets sent
-        lab_bytes_sent = tk.Label(frame1, text="bytes/packets sent  ", foreground=frg_color).grid(column=1, row=12, sticky="NE")
+        lab_bytes_sent = tk.Label(frame1, text="bytes/packets sent  ", foreground=frg_color).grid(column=1, row=13, sticky="NE")
         bytes_sent = str(utilities.pretty_print(tnet.bytes_sent))+" - "+str(tnet.packets_sent)
-        lab_bytes_sent2 = tk.Label(frame1, text=bytes_sent).grid(column=2, row=12, sticky="NW")
+        lab_bytes_sent2 = tk.Label(frame1, text=bytes_sent).grid(column=2, row=13, sticky="NW")
         # errin/dropin
-        lab_errin = tk.Label(frame1, text="errin/dropin  ", foreground=frg_color).grid(column=1, row=13, sticky="NE")
+        lab_errin = tk.Label(frame1, text="errin/dropin  ", foreground=frg_color).grid(column=1, row=14, sticky="NE")
         errin = str(tnet.errin)+" - "+str(tnet.dropin)
-        lab_errin2 = tk.Label(frame1, text=errin).grid(column=2, row=13, sticky="NW")
+        lab_errin2 = tk.Label(frame1, text=errin).grid(column=2, row=14, sticky="NW")
         # errout/dropout
-        lab_errout = tk.Label(frame1, text="errout/dropout  ", foreground=frg_color).grid(column=1, row=14, sticky="NE")
+        lab_errout = tk.Label(frame1, text="errout/dropout  ", foreground=frg_color).grid(column=1, row=15, sticky="NE")
         errout = str(tnet.errout)+" - "+str(tnet.dropout)
-        lab_errout2 = tk.Label(frame1, text=errout).grid(column=2, row=14, sticky="NW")
+        lab_errout2 = tk.Label(frame1, text=errout).grid(column=2, row=15, sticky="NW")
 
         # lab_net = tk.Label(frame1, text="\n Network Interfaces").grid(column=0, row=10, sticky="NW")
 
