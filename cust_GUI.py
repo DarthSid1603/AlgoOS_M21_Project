@@ -51,12 +51,12 @@ class Processes(Page):
 
     # Message Box For Killing Process
     def messageconfirm(self, inputtxt):
-        answer = tk.messagebox.askyesno(title='confirmation', message='Are you sure to kill the process?')
+        answer_message = tk.messagebox.askyesno(title='confirmation', message='Are you sure you want to kill the process?')
 
-        if answer:
+        if answer_message:
             Processes.kill_proc(self, inputtxt)
         else:
-            tk.messagebox.showinfo('Return','You will now return to the application screen')
+            tk.messagebox.showinfo('Return','You will now be returned to the application window')
             inputtxt.delete(1.0,tk.END)
             Processes.render(self)
 
