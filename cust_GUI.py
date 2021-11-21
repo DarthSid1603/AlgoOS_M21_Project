@@ -56,7 +56,7 @@ class Processes(Page):
         if answer_message:
             Processes.kill_proc(self, inputtxt)
         else:
-            tk.messagebox.showinfo('Return','You will now be returned to the application window')
+            tk.messagebox.showinfo('Return','You will now be returned to the application window.')
             inputtxt.delete(1.0,tk.END)
             Processes.render(self)
 
