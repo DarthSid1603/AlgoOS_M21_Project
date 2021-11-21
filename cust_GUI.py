@@ -100,14 +100,11 @@ class Processes(Page):
         user = user[2:-3]
         
         coms_util = sp.run(['ps', '-o', 'pid', '-u', user], stdout=sp.PIPE)
-        coms_temp = str(coms_util.stdout)
-        coms_temp = coms_temp[11:]
-        coms_temp = coms_temp.split()
+        coms_temp = str(coms_util.stdout.decode("utf-8"))
         coms = []
-        for x in coms_temp:
-            coms.append(x[:-2])
-        coms[-1] = coms[-1][:-1]        
-        coms = list(map(int,coms))
+        for x in coms_temp.split():
+            if x.isdigit():
+                coms.append(int(x))
         
         df = df.loc[df["pid"].isin(coms)]
         df = df.sort_values(by=[sortby], ascending = order)
