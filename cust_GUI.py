@@ -288,7 +288,7 @@ class SystemSummary(Page):
         lab_kernel2 = tk.Label(frame_grid, text=kernel_release).grid(column=1, row=4, sticky="NW")
         
         # desktop
-        lab_desktop = tk.Label(frame_grid, text="Desktop Manager  ", foreground=frg_color).grid(column=0, row=5, sticky="NE")
+        lab_desktop = tk.Label(frame_grid, text="Desktop Environment  ", foreground=frg_color).grid(column=0, row=5, sticky="NE")
         u_dmname = os.environ['XDG_CURRENT_DESKTOP']
         lab_desktop2 = tk.Label(frame_grid, text=u_dmname).grid(column=1, row=5, sticky="NW")
 
