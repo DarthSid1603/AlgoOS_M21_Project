@@ -291,9 +291,13 @@ class SystemSummary(Page):
         lab_desktop = tk.Label(frame_grid, text="Desktop Manager  ", foreground=frg_color).grid(column=0, row=5, sticky="NE")
         u_dmname = os.environ['XDG_CURRENT_DESKTOP']
         lab_desktop2 = tk.Label(frame_grid, text=u_dmname).grid(column=1, row=5, sticky="NW")
+
+        # Architecture
+        arch = tk.Label(frame_grid, text="Hardware Architecture  ", foreground=frg_color).grid(column=0, row=6, sticky="NE")
+        arch2 = tk.Label(frame_grid, text=uname_list.machine).grid(column=1, row=6, sticky="NW")
         
-        # processor
-        lab_cpu = tk.Label(frame_grid, text="CPU  ", foreground=frg_color).grid(column=0, row=6, sticky="NE")
+        # CPU
+        lab_cpu = tk.Label(frame_grid, text="CPU  ", foreground=frg_color).grid(column=0, row=7, sticky="NE")
         
         totalCores = psutil.cpu_count()
         physicalCores = psutil.cpu_count(logical=False)
@@ -314,7 +318,7 @@ class SystemSummary(Page):
             model = modelName+" x "+str(physicalCores)
         else:
             model = modelName+" x ("+str(physicalCores)+"+"+str(totalCores)+")"
-        lab_processor2 = tk.Label(frame_grid, text=model).grid(column=1, row=6, sticky="NW")
+        lab_processor2 = tk.Label(frame_grid, text=model).grid(column=1, row=7, sticky="NW")
         # if platform.system() == "Windows":
         #     ans =  platform.processor()
         # elif platform.system() == "Darwin":
@@ -325,7 +329,7 @@ class SystemSummary(Page):
         # lab_processor2 = tk.Label(frame_grid, text=ans).grid(column=1, row=6, sticky="NW")
         
         # GPU
-        lab_gpu = tk.Label(frame_grid, text="GPU  ", foreground=frg_color).grid(column=0, row=7, sticky="NE")
+        lab_gpu = tk.Label(frame_grid, text="GPU  ", foreground=frg_color).grid(column=0, row=8, sticky="NE")
         
         # gpus = GPUtil.getGPUs()
         # gpu_name = "#"
@@ -340,14 +344,14 @@ class SystemSummary(Page):
                 gpu_name = sp.check_output('lspci | grep VGA | cut -d ":" -f3', shell=True).decode().strip()
         except:
             pass
-        lab_gpu2 = tk.Label(frame_grid, text=gpu_name).grid(column=1, row=7, sticky="NW")
+        lab_gpu2 = tk.Label(frame_grid, text=gpu_name).grid(column=1, row=8, sticky="NW")
 
-        # installed memory
-        lab_inst_mem = tk.Label(frame_grid, text="RAM  ", foreground=frg_color).grid(column=0, row=8, sticky="NE")
-        lab_inst_mem2 = tk.Label(frame_grid, text=utilities.pretty_print(mem.total)).grid(column=1, row=8, sticky="NW")
+        # RAM
+        lab_inst_mem = tk.Label(frame_grid, text="RAM  ", foreground=frg_color).grid(column=0, row=9, sticky="NE")
+        lab_inst_mem2 = tk.Label(frame_grid, text=utilities.pretty_print(mem.total)).grid(column=1, row=9, sticky="NW")
         
-        # swap
-        lab_swap = tk.Label(frame_grid, text="Swap Memory ", foreground=frg_color).grid(column=0, row=9, sticky="NE")
+        # Swap Memory
+        lab_swap = tk.Label(frame_grid, text="Swap Memory ", foreground=frg_color).grid(column=0, row=10, sticky="NE")
         
         u_swapmem = 0
         try:
@@ -357,7 +361,7 @@ class SystemSummary(Page):
         except:
             u_swapmem = 0
         
-        lab_swap2 = tk.Label(frame_grid, text=utilities.pretty_print(u_swapmem)).grid(column=1, row=9, sticky="NW")
+        lab_swap2 = tk.Label(frame_grid, text=utilities.pretty_print(u_swapmem)).grid(column=1, row=10, sticky="NW")
         
         # root or home disk size
         # partitions
@@ -377,31 +381,32 @@ class SystemSummary(Page):
                 home_disk_usage = psutil.disk_usage('/home')
                 home_disk_total = utilities.pretty_print(home_disk_usage.total)
         # root disk size
-        lab_root_disk_size = tk.Label(frame_grid, text="Disk Size  ", foreground=frg_color).grid(column=0, row=10, sticky="NE")
-        lab_root_disk_size2 = tk.Label(frame_grid, text=root_disk_total).grid(column=1, row=10, sticky="NW")
+        lab_root_disk_size = tk.Label(frame_grid, text="Disk Size  ", foreground=frg_color).grid(column=0, row=11, sticky="NE")
+        lab_root_disk_size2 = tk.Label(frame_grid, text=root_disk_total).grid(column=1, row=11, sticky="NW")
         # root device and type
-        lab_root_disk_type = tk.Label(frame_grid, text="Root Device and Type  ", foreground=frg_color).grid(column=0, row=11, sticky="NE")
+        lab_root_disk_type = tk.Label(frame_grid, text="Root Device and Type  ", foreground=frg_color).grid(column=0, row=12, sticky="NE")
         root_dev_type = root_partition + " - " + root_fstype
-        lab_root_disk_type2 = tk.Label(frame_grid, text=root_dev_type).grid(column=1, row=11, sticky="NW")
+        lab_root_disk_type2 = tk.Label(frame_grid, text=root_dev_type).grid(column=1, row=12, sticky="NW")
         
         # if the home partition is present
         if home_partition != "":
             # home disk size
-            lab_home_disk_size = tk.Label(frame_grid, text="Home Size  ", foreground=frg_color).grid(column=0, row=12, sticky="NE")
-            lab_home_disk_size2 = tk.Label(frame_grid, text=home_disk_total).grid(column=1, row=12, sticky="NW")
+            lab_home_disk_size = tk.Label(frame_grid, text="Home Size  ", foreground=frg_color).grid(column=0, row=13, sticky="NE")
+            lab_home_disk_size2 = tk.Label(frame_grid, text=home_disk_total).grid(column=1, row=13, sticky="NW")
         
             # home device and type
-            lab_home_disk_type = tk.Label(frame_grid, text="Home Device and Type  ", foreground=frg_color).grid(column=0, row=13, sticky="NE")
+            lab_home_disk_type = tk.Label(frame_grid, text="Home Device and Type  ", foreground=frg_color).grid(column=0, row=14, sticky="NE")
             home_dev_type = home_partition + " - " + home_fstype
-            lab_home_disk_type2 = tk.Label(frame_grid, text=root_dev_type).grid(column=1, row=13, sticky="NW")
+            lab_home_disk_type2 = tk.Label(frame_grid, text=root_dev_type).grid(column=1, row=14, sticky="NW")
         
         # if PSUTIL_V > (5,1,0):
+        # Battery 
         battery = psutil.sensors_battery()
         if battery != None:
-            lab_battery = tk.Label(frame_grid, text="Battery  ", foreground=frg_color).grid(column=0, row=14, sticky="NE")
+            lab_battery = tk.Label(frame_grid, text="Battery  ", foreground=frg_color).grid(column=0, row=15, sticky="NE")
             label12 = str(battery.percent)+"% "
             #
-            lab_battery2 = tk.Label(frame_grid, text=label12).grid(column=1, row=14, sticky="NW")
+            lab_battery2 = tk.Label(frame_grid, text=label12).grid(column=1, row=15, sticky="NW")
 
 # Tab 4 : Memory and Network Details
 class MemoryAndNetwork(Page):
