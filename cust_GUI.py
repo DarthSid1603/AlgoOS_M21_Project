@@ -51,7 +51,7 @@ class Processes(Page):
 
     # Message Box For Killing Process
     def messageconfirm(self, inputtxt):
-        answer_message = tk.messagebox.askyesno(title='confirmation', message='Are you sure you want to kill the process?')
+        answer_message = tk.messagebox.askyesno(title='Confirmation', message='Are you sure you want to kill the process?')
 
         if answer_message:
             Processes.kill_proc(self, inputtxt)
@@ -62,12 +62,19 @@ class Processes(Page):
 
     # Process Killing
     def kill_proc(self, inputtxt):
-        inp = inputtxt.get(1.0, "end-1c")
+        inp = inputtxt.get(1.0, tk.END)
         kill_pid = int(inp)
-        proc = psutil.Process(kill_pid)
-        proc.kill()
-        inputtxt.delete(1.0,tk.END)
-        Processes.render(self)
+        try:
+            if psutil.pid_exists(kill_pid):
+                proc = psutil.Process(kill_pid)
+                proc.kill()
+                inputtxt.delete(1.0,tk.END)
+                #tk.messagebox.showinfo("Success","The Process with given PID has been successfully terminated.")
+                Processes.render(self)
+            #else:
+            #    tk.messagebox.showwarning("Warning", "The Process with the given PID does not exist.")
+        except psutil.AccessDenied:
+            tk.messagebox.showwarning("Warning", "Important System Process, cannot be terminated.")
 
     # Kill Process Button Implementation
     def kill_button(self):
