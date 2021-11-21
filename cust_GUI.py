@@ -182,36 +182,11 @@ class CPU_Usage(Page):
         # Graph definition        
         fig = plt.figure(figsize = (7, 5), dpi = 100)
         plot1 = fig.add_subplot(121)
-        # ax.set_xlabel("Time (in sec.)")
-        # ax.set_ylabel("Percentage used (%)")
         plot2 = fig.add_subplot(122)
-# <<<<<<< HEAD
-        # ax.set_xlabel("Time (in sec.)")
-        # ax.set_ylabel("Percentage used (%)")
-        # fig = plt.figure(figsize = [30, 15], dpi = 100)
-        # plot1 = fig.add_subplot(121)
-        # plt.xlabel('Time (in sec.)')
-        # plt.ylabel('Percentage used (%)')
-        # # plt.title('Original Image', fontsize=30)
-        # plot2 = fig.add_subplot(122)
-        # # plt.title('Histogram', fontsize=30)
-        # plt.xlabel('Time (in sec.)')
-        # plt.ylabel('Percentage used (%)')
-# =======
-# >>>>>>> Corrected animation errors
 
         cpu = collections.deque(np.zeros(25))
         ram = collections.deque(np.zeros(25))
 
-# <<<<<<< HEAD
-        # Create Tkinter canvas with matplotlib figure
-# =======
-        # plotting the graph
-
-        
-        # creating the Tkinter canvas
-        # containing the Matplotlib figure
-# >>>>>>> Corrected animation errors
         canvas = FigureCanvasTkAgg(fig, self)  
         ani = animation.FuncAnimation(fig, utilities.animate, fargs=(cpu, ram, plot1, plot2), interval=1000)
         canvas.draw()
