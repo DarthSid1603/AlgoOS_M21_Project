@@ -29,7 +29,7 @@ We present the necessary details that are shown similarly in a â€˜Task Managerâ€
 
 ## Requirements
 
-The project is based on the language Python 3.8.
+The project is based on the language Python 3.7.
 
 The libraries used in this project are:
 - **numpy** : It is a fundamental package for scientific computing in Python
@@ -39,6 +39,24 @@ The libraries used in this project are:
 - **pandas** : It is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool
 - **distro** : provides information about the OS distribution it runs on, such as a reliable machine-readable ID, or version information
 - **tkinter** : This is the standard GUI library for Python. It provides a powerful object-oriented interface to the Tk GUI toolkit.
+
+We have put all the libraries along with their required versions in a requirements.txt file. The installation for tkinter may vary for different users. To install the requirements, there are two ways that we can install the required libraries :
+1. If you are using pip, then we can type a command on our terminal inside the virtual env/ directory as
+```
+$ pip install -r requirements.txt
+```
+And for installing tkinter
+```
+$ sudo apt-get install python3-tk
+```
+2. If you are using conda for your python, then activate your project environment, open terminal, go inside required directory and type
+```
+$ conda install --file requirements.txt
+```
+And for installing tkinter
+```
+$ conda install -c anaconda tk
+```
 
 Also pyRAPL libraries provide some issues with permissions, so we have to provide access and read permissions to the intel-rapl folder so that the library can run properly. To do that, in your project directory, type the following command in your terminal - 
 ```
