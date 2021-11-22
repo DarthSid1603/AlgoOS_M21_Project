@@ -232,7 +232,7 @@ class SystemSummary(Page):
         frg_color = "gray40"
         
         # Images 
-        self.llogo = tk.PhotoImage(file="./icon/image.png")
+        self.llogo = tk.PhotoImage(file="../icon/image.png")
         lab_logo = tk.Label(self, image=self.llogo)
         lab_logo.pack(side="left", anchor="nw")
         
@@ -394,7 +394,7 @@ class MemoryAndNetwork(Page):
         label = tk.Label(self, text=" ")
         label.pack(side="top", fill="both")
         frg_color = "gray40"    
-        self.llogo = tk.PhotoImage(file="./icon/page4_2.png")
+        self.llogo = tk.PhotoImage(file="../icon/page4_2.png")
         lab_logo = tk.Label(self, image=self.llogo)
         lab_logo.pack(side="left", anchor="nw")
         uname_list = os.uname()
