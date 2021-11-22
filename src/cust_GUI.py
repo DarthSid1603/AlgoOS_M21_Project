@@ -6,7 +6,6 @@ from tkinter import messagebox
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
-from tabulate import tabulate
 import psutil
 import datetime as dt
 import matplotlib.animation as animation
@@ -15,7 +14,6 @@ import numpy as np
 import os
 import distro
 import shutil
-import GPUtil
 import platform
 import subprocess as sp
 
@@ -203,28 +201,6 @@ class SystemSummary(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
         SystemSummary.render(self)
-        SystemSummary.refresh_button(self)
-
-    def refresh_button(self):
-        frames1 = tk.Frame(self)
-        # frames1.grid(row = 0, column=0, padx=2, sticky=tk.NW)
-        refresh_Button = tk.Button(frames1,
-                        text = "Refresh", 
-                        command = lambda: SystemSummary.render(self),
-                        bg = "blue",
-                        fg = "white")
-        refresh_Button.pack(side = "left")
-
-    def gpuname():
-    # """Returns the model name of the first available GPU"""
-        try:
-            gpus = GPUtil.getGPUs()
-        except:
-            LOGGER.warning("Unable to detect GPU model. Is your GPU configured? Are you running with nvidia-docker?")
-            return "UNKNOWN"
-        if len(gpus) == 0:
-            raise ValueError("No GPUs detected in the system")
-        return gpus[0].name 
 
     def render(self):
         label = tk.Label(self, text=" ")
@@ -283,8 +259,6 @@ class SystemSummary(Page):
         modelName = ""
         model = ""
         try:
-            # command = "cat /proc/cpuinfo"
-            # u_proc_model = sp.check_output(command, shell=True).strip()
             f = open('/proc/cpuinfo', 'r')
             for line in f:
                 if line.rstrip('\n').startswith('model name'):
@@ -298,22 +272,9 @@ class SystemSummary(Page):
         else:
             model = modelName+" x ("+str(physicalCores)+"+"+str(totalCores)+")"
         lab_processor2 = tk.Label(frame_grid, text=model).grid(column=1, row=7, sticky="NW")
-        # if platform.system() == "Windows":
-        #     ans =  platform.processor()
-        # elif platform.system() == "Darwin":
-        #     ans =  sp.check_output(['/usr/sbin/sysctl', "-n", "machdep.cpu.brand_string"]).strip()
-        # elif platform.system() == "Linux":
-        #     command = "cat /proc/cpuinfo"
-        #     ans = sp.check_output(command, shell=True).strip()
-        # lab_processor2 = tk.Label(frame_grid, text=ans).grid(column=1, row=6, sticky="NW")
-        
+
         # GPU
         lab_gpu = tk.Label(frame_grid, text="GPU  ", foreground=frg_color).grid(column=0, row=8, sticky="NE")
-        
-        # gpus = GPUtil.getGPUs()
-        # gpu_name = "#"
-        
-        # gpu_name = SystemSummary.gpuname()
         
         gpu_name = "#"
         try:
@@ -378,23 +339,24 @@ class SystemSummary(Page):
             home_dev_type = home_partition + " - " + home_fstype
             lab_home_disk_type2 = tk.Label(frame_grid, text=root_dev_type).grid(column=1, row=14, sticky="NW")
         
-        # if PSUTIL_V > (5,1,0):
         # Battery 
         battery = psutil.sensors_battery()
         if battery != None:
             lab_battery = tk.Label(frame_grid, text="Battery  ", foreground=frg_color).grid(column=0, row=15, sticky="NE")
-            label12 = str(battery.percent)+"% "
-            #
+            label12 = str(int(battery.percent))+"% "
             lab_battery2 = tk.Label(frame_grid, text=label12).grid(column=1, row=15, sticky="NW")
 
 # Tab 4 : Memory and Network Details
 class MemoryAndNetwork(Page):
-   def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
+        MemoryAndNetwork.render(self)
+        
+    def render(self):
         label = tk.Label(self, text=" ")
         label.pack(side="top", fill="both")
         frg_color = "gray40"    
-        self.llogo = tk.PhotoImage(file="../icon/page4_2.png")
+        self.llogo = tk.PhotoImage(file="../icon/page4.png")
         lab_logo = tk.Label(self, image=self.llogo)
         lab_logo.pack(side="left", anchor="nw")
         uname_list = os.uname()
@@ -466,17 +428,7 @@ class MemoryAndNetwork(Page):
         lab_bytes_sent = tk.Label(frame1, text="bytes/packets sent  ", foreground=frg_color).grid(column=1, row=13, sticky="NE")
         bytes_sent = str(utilities.pretty_print(tnet.bytes_sent))+" - "+str(tnet.packets_sent)
         lab_bytes_sent2 = tk.Label(frame1, text=bytes_sent).grid(column=2, row=13, sticky="NW")
-        # errin/dropin
-        lab_errin = tk.Label(frame1, text="errin/dropin  ", foreground=frg_color).grid(column=1, row=14, sticky="NE")
-        errin = str(tnet.errin)+" - "+str(tnet.dropin)
-        lab_errin2 = tk.Label(frame1, text=errin).grid(column=2, row=14, sticky="NW")
-        # errout/dropout
-        lab_errout = tk.Label(frame1, text="errout/dropout  ", foreground=frg_color).grid(column=1, row=15, sticky="NE")
-        errout = str(tnet.errout)+" - "+str(tnet.dropout)
-        lab_errout2 = tk.Label(frame1, text=errout).grid(column=2, row=15, sticky="NW")
-
-        # lab_net = tk.Label(frame1, text="\n Network Interfaces").grid(column=0, row=10, sticky="NW")
-
+        
 
 class MainView(tk.Frame):
     def __init__(self, *args, **kwargs):
