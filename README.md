@@ -117,7 +117,7 @@ In this tab we monitor the current total CPU Usage and RAM Usage (in percentage)
 ### System Summary
 
 This tab provides the necessary details of the system the program is run on. The information presented are:
-![System Summary](./images/sys_summary.jpg)
+![System Summary](./images/system_summary.jpg)
 
 - **Username**
 
